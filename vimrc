@@ -267,7 +267,8 @@ set tags=tags;/
 source ~/vimconfig/plugins/checksymbol.vim
 
 
-(Kylim)
+
+"(Kylim)
 
 ==========================
 "=====  펑션키: F1 ~ F12
