@@ -1,8 +1,8 @@
 "주의: Source Explorer의 충돌을 피하기 위해서 SrcExpl_pluginList를 새로 작성
 
-"==========================
+"====================================================
 "= Bundle
-"==========================
+"====================================================
 " :BundleList          - list configured bundles
 " :BundleInstall(!)    - install(update) bundles
 " :BundleSearch(!) foo - search(or refresh cache first) for foo
@@ -32,7 +32,6 @@ Bundle 'git://github.com/wesleyche/SrcExpl.git'
 Bundle 'SuperTab'
 Bundle 'SuperTab-continued.'
 Bundle 'cscope_macros.vim'
-Bundle 'vmark.vim--Visual-Bookmarking'
 Bundle 'gtags.vim'
 Bundle 'OmniCppComplete'
 Bundle 'armasm'
@@ -41,44 +40,50 @@ Bundle 'https://github.com/dhruvasagar/vim-table-mode.git'
 "다른모양 주석 설정: \ca
 "주석해제: \<space>
 Bundle 'The-NERD-Commenter'
+Bundle 'AutoComplPop'
 
 filetype plugin indent on     " required!
 
-"==========================
+"====================================================
 "= 어셈블리 파일을 C처럼 인식하여 주석을 달기 위한 트릭
-"==========================
+"====================================================
 au BufRead,BufNewFile *.S		set ft=c
 
-"==========================
-"= tags 등록
-"==========================
-set tags=./tags
-"set tags+=/home/ygpark/bin/ndk/platforms/android-14/arch-arm/usr/include/tags
-"set tags+=~/repo/iamroot-linux-arm10c/tags
-"set tags+=~/.vimtags/cpp
-
-"==========================
+"====================================================
 "= 기본 설정
-"==========================
+"====================================================
 set cindent			"들여쓰기 설정
 set ruler			" 화면 우측 하단에 현재 커서의 위치(줄,칸)를 보여준다.
 set number			" 줄번호 출력
 set modifiable
 set hlsearch			" Highlight Search
-set ts=8			" tab stop - tab 크기
-set sw=8			" shift width - shift 크기 조절
-set sts=8			" soft tab stop - tab 이동 크기
+set ts=4			" tab stop - tab 크기
+set sw=4			" shift width - shift 크기 조절
+set sts=4			" soft tab stop - tab 이동 크기
+set expandtab
 set incsearch
-set ignorecase
 set printoptions=portrait:n,wrap:n,duplex:off
 set fileencodings=utf-8,euc-kr
-set gfn=나눔고딕코딩\ 10	" gvim용 폰트 설정
+set gfn=나눔고딕코딩\ 12	" gvim용 폰트 설정
 colorscheme desert
 
+"==========================
+"= autocmd
+"==========================
+autocmd BufEnter *.c        setlocal ts=8 sw=8 sts=8 noexpandtab
+autocmd BufEnter *.S        setlocal ts=8 sw=8 sts=8 noexpandtab
+autocmd BufEnter *.py       setlocal ts=8 sw=8 sts=8 noexpandtab
+autocmd BufEnter Makefile   setlocal ts=8 sw=8 sts=8 noexpandtab
+autocmd BufEnter .*         setlocal ts=8 sw=8 sts=8 noexpandtab nocindent
+autocmd BufEnter *.md       setlocal ts=8 sw=8 sts=8 noexpandtab nocindent
+autocmd BufEnter *.sh       setlocal ts=8 sw=8 sts=8 noexpandtab nocindent
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
 
-"==========================
+"====================================================
 "= gtags.vim 설정
-"==========================
+"====================================================
 nmap <C-F2> :copen<CR>
 nmap <C-F4> :cclose<CR>
 nmap <C-F5> :Gtags<SPACE>
@@ -88,18 +93,15 @@ nmap <C-F8> :Gozilla<CR>
 nmap <C-n> :cn<CR>
 nmap <C-p> :cp<CR>
 nmap <C-\><C-]> :GtagsCursor<CR>
-"==========================
-"= 키맵핑
-"==========================
 
-"=====  펑션키: F1 ~ F12
-map <F2> v]}zf				"코드의 { 부분에서 영역 접기
-map <F3> zo				"영역 펼치기
-map <F4> :set fileencoding=utf-8<cr>	"파일 인코딩 변경
-"map <F5> :!./build.sh<cr>
+"====================================================
+"= 키맵핑
+"====================================================
+" <F3> 이전 정의로 이동 (SrcExpl 플러그인이 설정)
+" <F4> 다음 정의로 이동 (SrcExpl 플러그인이 설정)
 map <F6> :BufExplorer<cr>
 map <F7> :NERDTreeToggle<CR>
-map <F8> :SrcExplToggle<CR> 
+map <F8> :SrcExplToggle<CR>
 map <F9> :TlistToggle<CR>
 
 "=====  PageUP PageDown
@@ -169,35 +171,82 @@ func! Man()
 endfunc
 nmap ,ma :call Man()<cr><cr>
 
-"==========================
+"====================================================
 "= Source Explorer config
-"==========================
-let g:SrcExpl_winHeight = 8 
-let g:SrcExpl_refreshTime = 100 
-let g:SrcExpl_jumpKey = "<ENTER>" 
-let g:SrcExpl_gobackKey = "<SPACE>" 
-" 충돌을 피하기 위해서 Source Explorer는 buffer는 사용하는 플러그인을 알아야 합니다.
-" 이 목록은 taglist, NERD Tree, Source Exploerer를 모두 띄어놓은 상태에서
-" ":buffers!"명령을 내려서 나오는 이름들을 적어주세요.
-let g:SrcExpl_pluginList = [ 
-				\ "__Tag_List__", 
-				\ "NERD_tree_1", 
-				\ "Source_Explorer", 
+"====================================================
+
+" // Set the height of Source Explorer window
+let g:SrcExpl_winHeight = 8
+" // Set 100 ms for refreshing the Source Explorer
+let g:SrcExpl_refreshTime = 100
+" // Set "Enter" key to jump into the exact definition context
+let g:SrcExpl_jumpKey = "<ENTER>"
+" // Set "Space" key for back from the definition context
+let g:SrcExpl_gobackKey = "<SPACE>"
+
+" // In order to avoid conflicts, the Source Explorer should know what plugins
+" // except itself are using buffers. And you need add their buffer names into
+" // below listaccording to the command ":buffers!"
+let g:SrcExpl_pluginList = [
+				\ "__Tag_List__",
+				\ "NERD_tree_1",
+				\ "Source_Explorer",
 				\ "[BufExplorer]"
-				\ ] 
+				\ ]
 
-let g:SrcExpl_searchLocalDef = 1 
-let g:SrcExpl_isUpdateTags = 0 "Do not let the Source Explorer update the tags file when opening 
-" // Use 'Exuberant Ctags' with '--sort=foldcase -R .' or '-L cscope.files' to 
-" //  create/update a tags file 
-let g:SrcExpl_updateTagsCmd = "ctags --sort=foldcase -R ." 
-let g:SrcExpl_updateTagsKey = "<F12>" 
+" // Enable/Disable the local definition searching, and note that this is not
+" // guaranteed to work, the Source Explorer doesn't check the syntax for now.
+" // It only searches for a match with the keyword according to command 'gd'
+let g:SrcExpl_searchLocalDef = 1
+" // Do not let the Source Explorer update the tags file when opening
+let g:SrcExpl_isUpdateTags = 0
+" // Use 'Exuberant Ctags' with '--sort=foldcase -R .' or '-L cscope.files' to
+" // create/update the tags file
+let g:SrcExpl_updateTagsCmd = "ctags --sort=foldcase -R ."
+" // Set "<F12>" key for updating the tags file artificially
+let g:SrcExpl_updateTagsKey = "<F12>"
+
+" // Set "<F3>" key for displaying the previous definition in the jump list
+let g:SrcExpl_prevDefKey = "<F3>"
+" // Set "<F4>" key for displaying the next definition in the jump list
+let g:SrcExpl_nextDefKey = "<F4>"
 
 
-"==========================
-"= auto load cscope.out
-"==========================
+
+
+"====================================================
+"= Tag List
+"====================================================
+filetype on"vim filetpye on
+let Tlist_Ctags_Cmd="/usr/bin/ctags"
+let Tlist_Inc_Winwidth=0
+let Tlist_Exit_OnlyWindow=0
+"window close=off
+let Tlist_Auto_Open=0
+let Tlist_Use_Right_Window=1
+
+"====================================================
+"= Project config
+"====================================================
+if filereadable(".project.vimrc")
+	source .project.vimrc
+endif
+
+"====================================================
+"= NERD Tree
+"====================================================
+let NERDTreeWinPos="left"
+let g:NERDTreeDirArrows=0
+
+
+
+"====================================================
+"= tags 설정 (cscope, ctags)
+"====================================================
+
+"Cscope의 상대경로 문제를 해결하기 위해서 매번 cscope.out파일을 새로 읽는다.
 function! LoadCscope()
+  exe "silent cs reset"
   let db = findfile("cscope.out", ".;")
   if (!empty(db))
     let path = strpart(db, 0, match(db, "/cscope.out$"))
@@ -207,32 +256,12 @@ function! LoadCscope()
   endif
 endfunction
 au BufEnter /* call LoadCscope()
+ 
+"현재 디렉토리부터 root 디렉토리까지 tags를 찾는다.
+set tags=tags;/
 
-"==========================
-"= Tag List
-"==========================
-filetype on"vim filetpye on
-let Tlist_Ctags_Cmd="/usr/bin/ctags"
-let Tlist_Inc_Winwidth=0
-let Tlist_Exit_OnlyWindow=0
-"window close=off
-let Tlist_Auto_Open=0
-let Tlist_Use_Right_Window=1
 
-"==========================
-"= Project config
-"==========================
-if filereadable(".project.vimrc")
-	source .project.vimrc
-endif
-
-"==========================
-"= NERD Tree
-"==========================
-let NERDTreeWinPos="left"
-let g:NERDTreeDirArrows=0
-
-"==========================
+"====================================================
 "= Check Symbol
-"==========================
+"====================================================
 source ~/vimconfig/plugins/checksymbol.vim
