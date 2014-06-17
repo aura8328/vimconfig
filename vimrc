@@ -265,3 +265,45 @@ set tags=tags;/
 "= Check Symbol
 "====================================================
 source ~/vimconfig/plugins/checksymbol.vim
+
+
+(Kylim)
+
+==========================
+"=====  펑션키: F1 ~ F12
+==========================
+map <F2> v]}zf   			 "코드의 { 부분에서 영역 접기
+map <F3> zo   			 "영역 펼치기
+"map <F4> :set fileencoding=utf-8<cr>    "파일 인코딩 변경
+"map <F5> :!./build.sh<cr>
+map <F6> :BufExplorer<cr>
+map <F7> :NERDTreeToggle<CR>
+map <F8> :SrcExplToggle<CR>
+map <F9> :TlistToggle<CR>
+
+
+"==========================
+"= xclip
+"==========================
+"붙여넣기시 자동들여쓰기를 하지 않게함
+set paste
+"붙여넣기 모드 선택키
+set pastetoggle=<Ins>
+
+"yank후에 마크위치로 이동하기에, 다시 커서를 이동시킴
+vnoremap y y`>
+"라인단위 yank후에 마크위치로 이동하기에, 다시 커서를 이동시킴
+vnoremap Y Y`>
+"붙여넣기 후 붙여넣기된 끝으로 커서이동
+noremap p p`]
+
+"비주얼블럭의 내용을 클립보드로 붙여넣기
+vmap <C-c> y:call system("xclip -i -selection clipboard", getreg("\""))<CR>
+
+"Control+v키가 비주얼 블럭모드 키라서 Control+w로 대체 (에디트플러스의 Alt+w에서 착상)
+"noremap <C-w> <C-v>
+
+"클립보드의 내용을 vim으로 붙여넣기
+map <C-p> :call setreg("\"",system("xclip -o -selection clipboard"))<CR>p"주의: Source Explorer의 충돌을 피하기 위해서 SrcExpl_pluginList를 새로 작성
+
+
